@@ -5,9 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>TutorialToken - Wallet</title>
+    <title>Decentralized Health Records</title>
 
     <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="css/utility.css">
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -18,32 +19,127 @@
     <![endif]-->
   </head>
   <body>
-    <div class="container">
-      <div class="row">
-        <div class="col-xs-12 col-sm-8 col-sm-push-2">
-          <h1 class="text-center">TutorialToken</h1>
-          <hr/>
-          <br/>
-        </div>
-      </div>
 
-      <div id="petsRow" class="row">
-        <div class="col-sm-6 col-sm-push-3 col-md-4 col-md-push-4">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h3 class="panel-title">My Wallet</h3>
+    <div class="container">
+        <h1>Decentralized Health Records</h1>
+
+        <!-- https://getbootstrap.com/docs/4.1/layout/grid/ -->
+
+      
+
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Insert Contacts</h2>
+
+                <hr>
+
+                <div id="errors"></div>
+                
+                <form>
+                    <label for="symptoms" class="control-label">Symptoms</label>
+                    <input id="symptoms" type="text">
+                    
+                    <br><br>
+
+                    <label for="medications" class="control-label">Medications</label>
+                    <input id="medications" type="text">
+
+                    <br><br>
+
+                    <label for="allergies" class="control-label">Allergies</label>
+                    <input id="allergies" type="text">
+                    
+                    <br><br>
+
+                    <label for="weight" class="control-label">Weight</label>
+                    <input id="weight" type="text">
+
+                    <br><br>
+
+                    <label for="height" class="control-label">Height</label>
+                    <input id="height" type="text">
+
+                    <br><br>
+
+                    
+                    <button id="submitContact">Create Contact</button>
+                </form>
             </div>
-            <div class="panel-body">
-              <h4>Balance</h4>
-              <strong>Balance</strong>: <span id="TTBalance"></span> TT<br/><br/>
-              <h4>Transfer</h4>
-              <input type="text" class="form-control" id="TTTransferAddress" placeholder="Address" />
-              <input type="text" class="form-control" id="TTTransferAmount" placeholder="Amount" />
-              <button class="btn btn-primary" id="transferButton" type="button">Transfer</button>
+
+            <div class="col-md-8">
+                <div id="transactions">
+                    
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+        
+        <div class="row">
+            <h2>Retrieve a contact's information</h2>
+            <div class="col-md-4">
+                <form>
+                    <label for="contact_id" class="control-label">Contact ID</label>
+                    <input id="contact_id" type="text">
+        
+                    <button id="getContact">Get this contact</button>
+                </form>
+            </div>
+
+            <div class="col-md-8" id="contact">
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Update Contact</h2>
+
+                <hr>
+
+                <div id="errors"></div>
+                
+                <form>
+                    <label for="update_contact_id" class="control-label">Contact ID</label>
+                    <input id="update_contact_id" type="text">
+
+                    <br><br>
+
+                    <label for="update_symptoms" class="control-label">Symptoms</label>
+                    <input id="update_symptoms" type="text">
+                    
+                    <br><br>
+
+                    <label for="update_medications" class="control-label">Medications</label>
+                    <input id="update_medications" type="text">
+
+                    <br><br>
+
+                    <label for="update_allergies" class="control-label">Allergies</label>
+                    <input id="update_allergies" type="text">
+                    
+                    <br><br>
+
+                    <label for="update_weight" class="control-label">Weight</label>
+                    <input id="update_weight" type="text">
+
+                    <br><br>
+
+                    <label for="update_height" class="control-label">Height</label>
+                    <input id="update_height" type="text">
+
+                    <br><br>
+                    
+                    <button id="updateContact">Update Contact</button>
+                </form>
+            </div>
+
+            <div class="col-md-8">
+                <div id="updateTransactions">
+                    
+                </div>
+            </div>
+        </div>
+
+        
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
