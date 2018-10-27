@@ -1,3 +1,53 @@
+var symptoms = $('#symptoms');
+var medications = $('#medications');
+var allergies = $('#allergies');
+var weight = $('#weight');
+var height = $('#height');
+var contact_id = $('#contact_id');
+
+var update_symptoms = $('#update_symptoms');
+var update_medications = $('#update_medications');
+var update_allergies = $('#update_allergies');
+var update_weight = $('#update_weight');
+var update_height = $('#update_height');
+var update_contact_id = $('#update_contact_id');
+
+function addTransactionToDOM(ob, transactionsDiv){
+
+  console.log(ob);
+  //start a virtual unordered list (list with bullets - no numbers)
+  var ul = $('<ul>');
+
+  //the tx is in a key in ob, so we get to it directly
+  var firstLi = $('<li>');
+  var txTerm = $('<span>').html('<strong>tx</strong>').addClass('right-margin-5');
+  var txVal = $('<span>').html(ob.tx);
+  firstLi.append(txTerm);
+  firstLi.append(txVal);
+
+  ul.append(firstLi);
+
+  //the rest of the data are grand childs of ob in ob.receipt
+
+  var li, term, val;
+
+  for (key in ob.receipt){
+    li = $('<li>');
+    term = $('<span>').html(`<strong>${key}</strong>`).addClass('right-margin-5');
+    val = $('<span>').html(ob.receipt[key]);
+    contractId = $('<span>').html(`Contract Id: ${ob.contractId}`);
+
+    li.append(term)
+    li.append(val);
+  
+
+    ul.append(li);
+  }
+
+  //we add the virtual unordered list onto the html
+  transactionsDiv.append(ul);
+}
+
 App = {
   web3Provider: null,
   contracts: {},
@@ -13,7 +63,7 @@ App = {
       web3 = new Web3(web3.currentProvider);
     } else {
       // set the provider you want from Web3.providers
-      App.web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:9545');
+      App.web3Provider = new Web3.providers.HttpProvider('http://127.0.0.1:7545');
       web3 = new Web3(App.web3Provider);
     }
 
@@ -21,81 +71,106 @@ App = {
   },
 
   initContract: function() {
-    $.getJSON('TutorialToken.json', function(data) {
+    $.getJSON('HealthRecords.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with truffle-contract.
-      var TutorialTokenArtifact = data;
-      App.contracts.TutorialToken = TruffleContract(TutorialTokenArtifact);
+      var HealthRecordsArtifact = data;
+      App.contracts.HealthRecords = TruffleContract(HealthRecordsArtifact);
 
       // Set the provider for our contract.
-      App.contracts.TutorialToken.setProvider(App.web3Provider);
-
-      // Use our contract to retieve and mark the adopted pets.
-      return App.getBalances();
+      App.contracts.HealthRecords.setProvider(App.web3Provider);
     });
 
     return App.bindEvents();
   },
 
   bindEvents: function() {
-    $(document).on('click', '#transferButton', App.handleTransfer);
+    $(document).on('click', '#submitContact', App.createContact);
+    $(document).on('click', '#getContact', App.getContact);
+    $(document).on('click', '#updateContact', App.updateCon);
+    $(document).on('click', '#grabNum', App.grabNum);
+    $(document).on('click', '#updateNum', App.updateNum);
   },
 
-  handleTransfer: function(event) {
+  createContact: function(event) {
     event.preventDefault();
 
-    var amount = parseInt($('#TTTransferAmount').val());
-    var toAddress = $('#TTTransferAddress').val();
+    var HealthRecordsInstance;
 
-    console.log('Transfer ' + amount + ' TT to ' + toAddress);
+    App.contracts.HealthRecords.deployed().then(function(instance) {
+      HealthRecordsInstance = instance;
+      
+      return HealthRecordsInstance.newContact(symptoms.val(), medications.val(), allergies.val(), weight.val(), height.val());
 
-    var tutorialTokenInstance;
+    }).then(function(result) {
 
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
+      //reference the div with an id of transactions from the html
+      var transactionsDiv = $('#transactions');
 
-      var account = accounts[0];
+      transactionsDiv.html("");
 
-      App.contracts.TutorialToken.deployed().then(function(instance) {
-        tutorialTokenInstance = instance;
+      //add a header to the div
+      transactionsDiv.append($('<h2>').text('Your Transactions'));
 
-        return tutorialTokenInstance.transfer(toAddress, amount, {from: account, gas: 100000});
-      }).then(function(result) {
-        alert('Transfer Successful!');
-        return App.getBalances();
-      }).catch(function(err) {
-        console.log(err.message);
-      });
+      //add a hr to the div
+      transactionsDiv.append($('<hr>'));
+
+      addTransactionToDOM(result, transactionsDiv);
+
+    }).catch(function(err) {
+      $('#errors').addClass('bad').text(err.toString());
     });
   },
+  updateCon: function(event) {
+    event.preventDefault();
 
-  getBalances: function() {
-    console.log('Getting balances...');
+    var HealthRecordsInstance;
 
-    var tutorialTokenInstance;
+    App.contracts.HealthRecords.deployed().then(function(instance) {
+      HealthRecordsInstance = instance;
 
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
+      return HealthRecordsInstance.updateContact(update_contact_id.val(), update_symptoms.val(), update_medications.val(), update_allergies.val(), update_weight.val(), update_height.val());
 
-      var account = accounts[0];
+    }).then(function(result) {
+      //reference the div with an id of transactions from the html
+      var transactionsDiv = $('#updateTransactions');
 
-      App.contracts.TutorialToken.deployed().then(function(instance) {
-        tutorialTokenInstance = instance;
+      transactionsDiv.html("");
 
-        return tutorialTokenInstance.balanceOf(account);
-      }).then(function(result) {
-        balance = result.c[0];
+      //add a header to the div
+      transactionsDiv.append($('<h2>').text('Your Transactions'));
 
-        $('#TTBalance').text(balance);
-      }).catch(function(err) {
-        console.log(err.message);
-      });
+      //add a hr to the div
+      transactionsDiv.append($('<hr>'));
+
+      addTransactionToDOM(result, transactionsDiv);
+
+    }).catch(function(err) {
+      $('#errors').addClass('bad').text(err.toString());
     });
-  }
 
+  },
+  getContact: function(event) {
+    event.preventDefault();
+
+    var HealthRecordsInstance;
+
+    App.contracts.HealthRecords.deployed().then(function(instance) {
+      HealthRecordsInstance = instance;
+
+      return HealthRecordsInstance.getContact(contact_id.val());
+
+    }).then(function(result) {
+
+      var res = result.toString();
+
+      $('#contact').text(res);
+
+    }).catch(function(err) {
+      console.log(err.message);
+    });
+
+  }
+  
 };
 
 $(function() {
